@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JRNL · Training Journal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231a1a1a'/%3E%3Cpath fill-rule='evenodd' fill='%23E85A1A' d='M50 14 L86 50 L50 86 L14 50 Z M50 33 L33 50 L50 67 L67 50 Z'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#1a1a1a;
+    --surface:#242424;
+    --surface-2:#2c2a27;
+    --surface-3:#322f2b;
+    --line:#3a3733;
+    --line-strong:#4a463f;
+    --txt:#ECE8E3;
+    --txt-2:#9a9389;
+    --txt-3:#6b655c;
+    --accent:#E85A1A;
+    --accent-dim:#b8480f;
+    --good:#7e9b6a;
+    --warn:#d8a23a;
+    --alert:#c8523a;
+    --disp:"Barlow Condensed",sans-serif;
+    --body:"Barlow",sans-serif;
+    --mono:"JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:var(--body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding-top:64px;
+    min-height:100vh;
+  }
+  ::selection{background:var(--accent);color:#fff;}
+
+  /* ---------- NAV ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;height:64px;z-index:50;
+    background:rgba(26,26,26,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:stretch;
+  }
+  .brand{
+    display:flex;align-items:center;gap:11px;
+    padding:0 22px;flex-shrink:0;
+    border-right:1px solid var(--line);
+  }
+  .brand .mark{
+    width:18px;height:18px;flex-shrink:0;fill:var(--accent);
+  }
+  .brand .name{
+    font-family:var(--disp);font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;font-size:18px;line-height:1;
+  }
+  .brand .name small{display:block;font-size:9px;color:var(--txt-3);letter-spacing:.22em;margin-top:3px;}
+  .tabs{display:flex;align-items:stretch;overflow-x:auto;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    appearance:none;background:none;border:none;cursor:pointer;
+    font-family:var(--disp);font-weight:600;font-size:15px;
+    letter-spacing:.1em;text-transform:uppercase;
+    color:var(--txt-2);
+    padding:0 22px;display:flex;align-items:center;gap:9px;
+    position:relative;white-space:nowrap;
+    transition:color .18s ease;
+  }
+  .tab .idx{font-family:var(--mono);font-size:10px;color:var(--txt-3);font-weight:500;}
+  .tab:hover{color:var(--txt);}
+  .tab.active{color:var(--txt);}
+  .tab.active::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);
+  }
+  .clock{margin-left:auto;display:flex;align-items:center;gap:14px;padding:0 22px;border-left:1px solid var(--line);flex-shrink:0;}
+  .clock .t{font-family:var(--mono);font-size:13px;color:var(--txt-2);}
+  .clock .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(126,155,106,.18);}
+  @media(max-width:640px){
+    .brand .name{font-size:16px;}
+    .clock{display:none;}
+    .tab{padding:0 14px;font-size:13px;}
+    .brand{padding:0 14px;}
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .wrap{max-width:1080px;margin:0 auto;padding:38px 24px 80px;}
+  @media(max-width:640px){.wrap{padding:26px 16px 64px;}}
+
+  .view{display:none;}
+  .view.active{display:block;opacity:1;transform:none;}
+  @media(prefers-reduced-motion:no-preference){
+    .view.active.animate{animation:rise .42s cubic-bezier(.2,.7,.2,1);}
+  }
+  @keyframes rise{from{transform:translateY(12px);}to{transform:none;}}
+
+  /* page head */
+  .phead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:38px;flex-wrap:wrap;}
+  .phead .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
+  .phead h1{font-family:var(--disp);font-weight:700;letter-spacing:.01em;line-height:.92;text-transform:uppercase;font-size:clamp(34px,6vw,58px);}
+  .phead .sub{font-family:var(--mono);font-size:12px;color:var(--txt-2);}
+
+  /* section label */
+  .slabel{
+    font-family:var(--disp);font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+    font-size:13px;color:var(--txt-2);
+    display:flex;align-items:center;gap:12px;margin:34px 0 16px;
+  }
+  .slabel::after{content:"";flex:1;height:1px;background:var(--line);}
+  .slabel .n{font-family:var(--mono);color:var(--txt-3);font-size:10px;}
+
+  /* ---------- FORM (sec 1) ---------- */
+  .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:28px 40px;}
+  @media(max-width:760px){.formgrid{grid-template-columns:1fr;gap:8px;}}
+  .field{margin-bottom:26px;}
+  .flabel{font-family:var(--disp);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:var(--txt-2);margin-bottom:11px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .flabel .hint{font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.05em;text-transform:none;}
+
+  .chips{display:flex;flex-wrap:wrap;gap:9px;}
+  .chip{
+    appearance:none;cursor:pointer;
+    background:var(--surface);border:1px solid var(--line);
+    color:var(--txt-2);
+    font-family:var(--disp);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px;
+    padding:10px 15px;display:flex;align-items:center;gap:8px;
+    transition:all .16s ease;
+  }
+  .chip svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .chip:hover{border-color:var(--line-strong);color:var(--txt);}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  /* effort slider */
+  .effort{display:flex;align-items:center;gap:22px;}
+  .effort .big{font-family:var(--mono);font-weight:700;font-size:54px;line-height:.8;width:104px;flex-shrink:0;}
+  .effort .big span{color:var(--txt-3);font-size:24px;font-weight:400;}
+  .effort .col{flex:1;}
+  .srange{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:var(--surface);border:1px solid var(--line);outline:none;cursor:pointer;}
+  .srange::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:28px;background:var(--accent);cursor:pointer;border:2px solid var(--bg);}
+  .srange::-moz-range-thumb{width:18px;height:26px;background:var(--accent);cursor:pointer;border:2px solid var(--bg);border-radius:0;}
+  .sscale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--txt-3);margin-top:8px;}
+
+  textarea{
+    width:100%;background:var(--surface);border:1px solid var(--line);
+    color:var(--txt);font-family:var(--body);font-size:15px;line-height:1.5;
+    padding:13px 14px;resize:vertical;min-height:84px;
+    transition:border-color .16s ease;
+  }
+  textarea:focus{outline:none;border-color:var(--accent-dim);}
+  textarea::placeholder{color:var(--txt-3);}
+  [hidden]{display:none!important;}
+
+  /* write / voice mode toggle */
+  .modetog{display:inline-flex;border:1px solid var(--line);flex-shrink:0;}
+  .mt{appearance:none;cursor:pointer;background:none;border:none;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3);padding:4px 11px;transition:all .14s ease;}
+  .mt + .mt{border-left:1px solid var(--line);}
+  .mt.on{background:var(--accent);color:#fff;}
+  .mt:not(.on):hover{color:var(--txt);}
+
+  /* voice note */
+  .voice{background:var(--surface);border:1px solid var(--line);min-height:84px;display:flex;align-items:center;gap:14px;padding:13px 14px;transition:border-color .16s ease;}
+  .voice.live{border-color:var(--accent);}
+  .vbtn{appearance:none;cursor:pointer;flex-shrink:0;width:44px;height:44px;border-radius:50%;border:none;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;transition:background .16s ease,transform .08s ease;}
+  .vbtn:hover{background:#ff6a26;}
+  .vbtn:active{transform:scale(.94);}
+  .vbtn svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:1.9;}
+  .vbtn.stop{background:var(--alert);}
+  .vbtn.stop svg{fill:#fff;stroke:none;}
+  .vbtn.play{background:var(--surface-2);border:1px solid var(--line-strong);}
+  .vbtn.play svg{stroke:none;fill:var(--accent);}
+  .voice .vmain{flex:1;min-width:0;}
+  .voice .vhint{font-size:14px;color:var(--txt-3);}
+  .voice .vtime{font-family:var(--mono);font-weight:700;font-size:18px;color:var(--txt);}
+  .voice .vtime small{color:var(--txt-3);font-weight:400;font-size:11px;margin-left:7px;letter-spacing:.04em;}
+  .wave{display:flex;align-items:center;gap:3px;height:30px;margin-top:6px;overflow:hidden;}
+  .wave i{width:3px;background:var(--accent);flex-shrink:0;border-radius:1px;transition:opacity .2s ease;}
+  .wave.dim i{background:var(--line-strong);}
+  .wave.dim i.played{background:var(--accent);}
+  .recdot{width:9px;height:9px;border-radius:50%;background:var(--alert);flex-shrink:0;animation:blink 1s steps(2,start) infinite;}
+  @keyframes blink{50%{opacity:.25;}}
+  .vdel{appearance:none;cursor:pointer;background:none;border:none;color:var(--txt-3);font-family:var(--mono);font-size:11px;letter-spacing:.06em;flex-shrink:0;padding:6px;transition:color .14s ease;}
+  .vdel:hover{color:var(--alert);}
+  .vrow{display:flex;align-items:center;gap:10px;}
+
+  .stepper{display:inline-flex;align-items:stretch;border:1px solid var(--line);background:var(--surface);}
+  .stepper button{appearance:none;background:none;border:none;cursor:pointer;color:var(--txt);width:46px;font-family:var(--mono);font-size:22px;line-height:1;transition:background .14s ease;}
+  .stepper button:hover{background:var(--surface-2);color:var(--accent);}
+  .stepper .val{display:flex;align-items:baseline;gap:4px;justify-content:center;min-width:96px;border-left:1px solid var(--line);border-right:1px solid var(--line);font-family:var(--mono);font-weight:700;font-size:24px;padding:9px 0;}
+  .stepper .val small{font-size:12px;color:var(--txt-3);font-weight:400;}
+
+  .moons{display:flex;gap:10px;}
+  .moon{appearance:none;background:none;border:none;cursor:pointer;padding:0;color:var(--line-strong);transition:color .16s ease,transform .12s ease;}
+  .moon svg{width:34px;height:34px;display:block;}
+  .moon:hover{transform:translateY(-2px);}
+  .moon.on{color:var(--accent);}
+
+  .submit{
+    appearance:none;cursor:pointer;width:100%;border:none;
+    background:var(--accent);color:#fff;
+    font-family:var(--disp);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:19px;
+    padding:19px;margin-top:14px;
+    transition:background .16s ease,transform .08s ease;
+    display:flex;align-items:center;justify-content:center;gap:12px;
+  }
+  .submit:hover{background:#ff6a26;}
+  .submit:active{transform:translateY(1px);}
+  .submit svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;}
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--surface-2);border:1px solid var(--accent);color:var(--txt);
+    font-family:var(--mono);font-size:13px;padding:13px 20px;
+    display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;
+    transition:opacity .3s ease,transform .3s ease;z-index:80;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .mark{width:9px;height:9px;background:var(--accent);transform:rotate(45deg);}
+
+  /* ---------- METRIC CARDS (sec 2) ---------- */
+  .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  @media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:380px){.metrics{grid-template-columns:1fr;}}
+  .mcard{background:var(--surface);padding:18px 16px 16px;}
+  .mcard .v{font-family:var(--mono);font-weight:700;font-size:30px;line-height:1;letter-spacing:-.02em;}
+  .mcard .v small{font-size:14px;color:var(--txt-3);font-weight:400;letter-spacing:0;}
+  .mcard .l{font-family:var(--disp);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:11px;color:var(--txt-2);margin-top:9px;}
+
+  .panel{background:var(--surface);border:1px solid var(--line);padding:22px 22px;}
+  .panel + .panel{margin-top:1px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr;}}
+  .grid2 .panel{border:none;}
+
+  .blockh{font-family:var(--disp);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .blockh .tick{width:10px;height:10px;background:var(--accent);transform:rotate(45deg);}
+
+  .sens-row{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:13px 0;border-bottom:1px solid var(--line);}
+  .sens-row:last-child{border-bottom:none;}
+  .sens-row .k{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:var(--txt-2);padding-top:2px;}
+  .sens-row .vtxt{font-size:15px;color:var(--txt);}
+  @media(max-width:520px){.sens-row{grid-template-columns:1fr;gap:5px;}}
+
+  .effort-read{display:flex;align-items:center;gap:18px;}
+  .effort-read .num{font-family:var(--mono);font-weight:700;font-size:40px;line-height:.85;}
+  .effort-read .num span{font-size:18px;color:var(--txt-3);font-weight:400;}
+  .effort-read .bar{flex:1;height:8px;background:var(--surface-2);border:1px solid var(--line);position:relative;overflow:hidden;}
+  .effort-read .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);}
+
+  .sleep-read{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-end;}
+  .sleep-read .item .v{font-family:var(--mono);font-weight:700;font-size:30px;line-height:1;}
+  .sleep-read .item .v small{font-size:13px;color:var(--txt-3);font-weight:400;}
+  .sleep-read .item .l{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);margin-top:8px;}
+  .sleep-read .moons-read{display:flex;gap:6px;color:var(--accent);}
+  .sleep-read .moons-read svg{width:22px;height:22px;}
+  .sleep-read .moons-read .empty{color:var(--line-strong);}
+
+  .recs{background:var(--surface-3);}
+  .rec-col .rh{font-family:var(--disp);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--accent);margin-bottom:9px;}
+  .rec-col p{font-size:15px;color:var(--txt);line-height:1.55;}
+
+  .nota{
+    border-left:3px solid var(--accent);
+    background:var(--surface);
+    padding:15px 20px;margin-top:1px;
+    font-style:italic;font-size:14px;color:var(--txt-2);line-height:1.6;
+  }
+  .nota b{font-style:normal;font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-3);display:block;margin-bottom:5px;}
+
+  /* ---------- WEEKLY (sec 3) ---------- */
+  .countdown{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);padding:11px 16px;}
+  .countdown .big{font-family:var(--mono);font-weight:700;font-size:28px;line-height:1;color:var(--accent);}
+  .countdown .lbl{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);line-height:1.3;}
+
+  table.brk{width:100%;border-collapse:collapse;font-size:15px;}
+  table.brk th{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);text-align:right;padding:0 0 12px;border-bottom:1px solid var(--line-strong);}
+  table.brk th:first-child{text-align:left;}
+  table.brk td{font-family:var(--mono);font-size:15px;text-align:right;padding:13px 0;border-bottom:1px solid var(--line);}
+  table.brk td:first-child{text-align:left;font-family:var(--body);font-weight:500;display:flex;align-items:center;gap:10px;}
+  table.brk td .dot{width:9px;height:9px;flex-shrink:0;}
+  table.brk tr.total td{font-family:var(--mono);font-weight:700;border-bottom:none;border-top:1px solid var(--line-strong);color:var(--txt);}
+  table.brk tr.total{background:var(--surface-2);}
+  table.brk tr.total td:first-child{font-family:var(--disp);letter-spacing:.1em;text-transform:uppercase;font-size:13px;}
+  table.brk tr.total td{padding:13px 12px;}
+  table.brk th:last-child,table.brk td:last-child{padding-right:12px;}
+  table.brk th:first-child,table.brk tr.total td:first-child{padding-left:12px;}
+
+  .load{display:flex;align-items:flex-end;gap:10px;height:170px;padding-top:10px;}
+  .load .day{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;height:100%;justify-content:flex-end;}
+  .load .track{width:100%;flex:1;display:flex;align-items:flex-end;}
+  .load .barwrap{width:100%;display:flex;align-items:flex-end;justify-content:center;height:100%;}
+  .load .bar{width:78%;background:var(--accent);position:relative;transition:height .6s cubic-bezier(.2,.7,.2,1);}
+  .load .bar.we{background:var(--accent-dim);}
+  .load .bar .cap{position:absolute;top:-19px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--txt-2);}
+  .load .bar.zero{background:var(--line);height:3px!important;}
+  .load .dlabel{font-family:var(--disp);font-weight:600;font-size:13px;letter-spacing:.05em;color:var(--txt-2);}
+  .load .day.weekend .dlabel{color:var(--accent);}
+
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  @media(max-width:680px){.three{grid-template-columns:1fr;}}
+  .three .panel{border:none;}
+  .three .ph{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:var(--accent);margin-bottom:9px;}
+  .three .pt{font-size:14.5px;color:var(--txt);line-height:1.55;}
+  .three .stage{font-family:var(--mono);font-size:10px;color:var(--txt-3);display:block;margin-bottom:7px;}
+
+  .insight{background:var(--surface-3);border:1px solid var(--line);border-left:3px solid var(--accent);padding:20px 22px;}
+  .insight .blockh{color:var(--txt);}
+  .insight p{font-size:15px;line-height:1.6;color:var(--txt);}
+
+  .reclist{list-style:none;display:flex;flex-direction:column;gap:1px;}
+  .reclist li{background:var(--surface);border:1px solid var(--line);padding:15px 18px;display:flex;align-items:flex-start;gap:14px;}
+  .reclist .tag{font-family:var(--disp);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:11px;padding:4px 9px;flex-shrink:0;min-width:84px;text-align:center;}
+  .tag.prio{background:var(--accent);color:#fff;}
+  .tag.mod{background:rgba(216,162,58,.16);color:var(--warn);border:1px solid rgba(216,162,58,.4);}
+  .tag.watch{background:rgba(200,82,58,.14);color:var(--alert);border:1px solid rgba(200,82,58,.4);}
+  .reclist .rtxt{font-size:15px;line-height:1.5;color:var(--txt);padding-top:1px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><path fill-rule="evenodd" d="M50 8 L92 50 L50 92 L8 50 Z M50 30 L30 50 L50 70 L70 50 Z"></path></svg>
+    <div class="name">JRNL<small>TRAINING JOURNAL</small></div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-view="feedback"><span class="idx">01</span>Feelings</button>
+    <button class="tab" data-view="daily"><span class="idx">02</span>Daily Summary</button>
+    <button class="tab" data-view="weekly"><span class="idx">03</span>Weekly Summary</button>
+  </nav>
+  <div class="clock">
+    <span class="dot"></span>
+    <span class="t" id="clock">--:--</span>
+  </div>
+</header>
+
+<main>
+<!-- ============ SECTION 1 — FEEDBACK ============ -->
+<section class="view active" id="feedback" data-screen-label="Feelings">
+  <div class="wrap">
+    <div class="phead">
+      <div>
+        <div class="kicker">Post-session log</div>
+        <h1>Feelings</h1>
+      </div>
+      <div class="sub" id="todayStr">—</div>
+    </div>
+
+    <form id="logForm" autocomplete="off">
+    <div class="formgrid">
+      <!-- LEFT COLUMN -->
+      <div>
+        <div class="field">
+          <div class="flabel">Activity type</div>
+          <div class="chips" id="actChips"></div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">Perceived effort <span class="hint">RPE 1–10</span></div>
+          <div class="effort">
+            <div class="big"><span id="effortNum">6</span><span>/10</span></div>
+            <div class="col">
+              <input type="range" class="srange" id="effort" min="1" max="10" step="1" value="6" />
+              <div class="sscale"><span>EASY</span><span>MODERATE</span><span>MAX</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">Sleep quality <span class="hint" id="sleepWord">Good</span></div>
+          <div class="moons" id="moons"></div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">Sleep hours</div>
+          <div class="stepper">
+            <button type="button" data-step="-1">−</button>
+            <div class="val"><span id="hours">7.5</span><small>h</small></div>
+            <button type="button" data-step="1">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+        <div class="field">
+          <div class="flabel">Physical feelings
+            <div class="modetog">
+              <button type="button" class="mt on" data-mode="text">Write</button>
+              <button type="button" class="mt" data-mode="voice">Voice</button>
+            </div>
+          </div>
+          <textarea placeholder="legs, breathing, niggles..."></textarea>
+          <div class="voice" hidden></div>
+        </div>
+
+        <div class="field">
+          <div class="flabel">Mental feelings
+            <div class="modetog">
+              <button type="button" class="mt on" data-mode="text">Write</button>
+              <button type="button" class="mt" data-mode="voice">Voice</button>
+            </div>
+          </div>
+          <textarea placeholder="motivation, focus, key moments..."></textarea>
+          <div class="voice" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit">
+      <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg>
+      Log session
+    </button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ SECTION 2 — DAILY ============ -->
+<section class="view" id="daily" data-screen-label="Daily Summary">
+  <div class="wrap">
+    <div class="phead">
+      <div>
+        <div class="kicker">Trail run · Mountain outing</div>
+        <h1>Tuesday 03 Jun</h1>
+      </div>
+      <div class="sub">07:42 – 09:57 · Peñalara massif</div>
+    </div>
+
+    <div class="metrics">
+      <div class="mcard"><div class="v">18.0<small> km</small></div><div class="l">Distance</div></div>
+      <div class="mcard"><div class="v">900<small> m</small></div><div class="l">Elevation D+</div></div>
+      <div class="mcard"><div class="v">2:15<small> h</small></div><div class="l">Duration</div></div>
+      <div class="mcard"><div class="v">148<small>/172</small></div><div class="l">HR avg/max</div></div>
+      <div class="mcard"><div class="v">7:30<small> /km</small></div><div class="l">Avg pace</div></div>
+    </div>
+
+    <div class="slabel"><span class="n">A</span>Feelings</div>
+    <div class="grid2">
+      <div class="panel">
+        <div class="sens-row">
+          <div class="k">Physical</div>
+          <div class="vtxt">Legs solid on the climbs, a bit heavy over the last 4 km. Breathing controlled throughout. No niggles.</div>
+        </div>
+        <div class="sens-row">
+          <div class="k">Mental</div>
+          <div class="vtxt">Very focused in the first half. Good decision-making on the technical descent. Some mental fatigue near the end.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="blockh"><span class="tick"></span>Perceived effort</div>
+        <div class="effort-read">
+          <div class="num">7<span>/10</span></div>
+          <div class="bar"><i style="width:70%"></i></div>
+        </div>
+        <div class="sens-row" style="border-top:1px solid var(--line);margin-top:18px;">
+          <div class="k">Reading</div>
+          <div class="vtxt">Demanding but sustainable. Consistent with the current load phase.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slabel"><span class="n">B</span>Sleep</div>
+    <div class="panel">
+      <div class="sleep-read">
+        <div class="item"><div class="v">7.5<small> h</small></div><div class="l">Hours</div></div>
+        <div class="item">
+          <div class="moons-read" id="dailyMoons"></div>
+          <div class="l">Quality</div>
+        </div>
+        <div class="item"><div class="v">62<small> ms</small></div><div class="l">HRV</div></div>
+        <div class="item"><div class="v">48<small> bpm</small></div><div class="l">Resting HR</div></div>
+      </div>
+    </div>
+
+    <div class="slabel"><span class="n">C</span>Recommendations</div>
+    <div class="grid2 recs">
+      <div class="panel rec-col">
+        <div class="rh">Next session</div>
+        <p>Easy 45–60 min run on flat terrain, HR under 140. Prioritize cadence and form, not volume. Save the mountain for Thursday.</p>
+      </div>
+      <div class="panel rec-col">
+        <div class="rh">Recovery</div>
+        <p>Ankle and calf mobility tonight. Hydrate with electrolytes. Sleep target: 8 h. Carb-rich meal within the next 2 h.</p>
+      </div>
+    </div>
+
+    <div class="nota">
+      <b>Day note</b>
+      The technical descent flowed much better than last week — foot confidence is returning after April's sprain. Keep monitoring, don't force it.
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 3 — WEEKLY ============ -->
+<section class="view" id="weekly" data-screen-label="Weekly Summary">
+  <div class="wrap">
+    <div class="phead">
+      <div>
+        <div class="kicker">Week 23 · Load block</div>
+        <h1>26 May – 01 Jun</h1>
+      </div>
+      <div class="countdown">
+        <span class="big">14</span>
+        <span class="lbl">Weeks<br/>to goal</span>
+      </div>
+    </div>
+
+    <div class="slabel"><span class="n">A</span>Breakdown by discipline</div>
+    <div class="panel" style="padding:8px 10px;">
+      <table class="brk">
+        <thead>
+          <tr><th>Discipline</th><th>Sessions</th><th>Km</th><th>D+</th><th>Time</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="dot" style="background:var(--accent)"></span>Trail run</td><td>3</td><td>47.0</td><td>2 100</td><td>5:40</td></tr>
+          <tr><td><span class="dot" style="background:#7e9b6a"></span>Climbing</td><td>1</td><td>—</td><td>700</td><td>2:20</td></tr>
+          <tr class="total"><td>Total</td><td>4</td><td>47.0</td><td>2 800</td><td>8:00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="slabel"><span class="n">B</span>Daily load <span style="font-family:var(--mono);font-size:10px;color:var(--txt-3);font-weight:400;letter-spacing:.05em;text-transform:none;margin-left:auto;">activity min</span></div>
+    <div class="panel">
+      <div class="load" id="loadChart"></div>
+    </div>
+
+    <div class="slabel"><span class="n">C</span>Average feelings</div>
+    <div class="three">
+      <div class="panel"><span class="stage">PHASE 01</span><div class="ph">Start of week</div><div class="pt">Body fresh after Sunday's rest. Motivated and ready, a little impatient to build volume.</div></div>
+      <div class="panel"><span class="stage">PHASE 02</span><div class="ph">Midweek</div><div class="pt">Fatigue building as expected. Quality sessions cost more, but the head held up through the block.</div></div>
+      <div class="panel"><span class="stage">PHASE 03</span><div class="ph">End of week</div><div class="pt">Heavy legs on Saturday; a good climbing session flipped the switch. Satisfied finish, ready to deload.</div></div>
+    </div>
+
+    <div class="slabel"><span class="n">D</span>Insights</div>
+    <div class="insight">
+      <div class="blockh"><span class="tick"></span>Week analysis</div>
+      <p>Elevation volume (2 800 m) is 12% above the 4-week average — consistent with the load block, but near the recommended ceiling. Resting HR rose from 46 to 48 bpm toward the end, a mild sign of accumulated fatigue. The climbing session added stimulus without impact — a good call. Next week should be a deload (–30% volume) to consolidate adaptations.</p>
+    </div>
+
+    <div class="slabel"><span class="n">E</span>Recommendations · Next week</div>
+    <ul class="reclist">
+      <li><span class="tag prio">Prioritize</span><span class="rtxt">Deload week: cut total volume by 30% and drop the long mountain session. Keep a single short quality session.</span></li>
+      <li><span class="tag mod">Moderate</span><span class="rtxt">Keep cumulative elevation under 1 800 m. Swap the long trail for a rolling-terrain run.</span></li>
+      <li><span class="tag watch">Watch</span><span class="rtxt">Resting HR and HRV each morning. If HR stays above 48 bpm, add a full rest day.</span></li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<div class="toast" id="toast"><span class="mark"></span><span id="toastMsg">Session logged</span></div>
+
+<script>
+/* ---------- icons ---------- */
+const icons = {
+  run:'<circle cx="14" cy="5" r="2.1"/><path d="M14 8l-3.5 4 3 2.4 1 5.6M10.5 12L5.5 13.4M14 14.4l4.5 1.4"/>',
+  trail:'<path d="M2 20h20L14.5 6l-3.5 5.5L8 7.5z"/><circle cx="6" cy="5.5" r="1.6"/>',
+  strength:'<path d="M4 9v6M20 9v6M7 6.5v11M17 6.5v11M7 12h10"/>',
+  road:'<path d="M7 21L10.5 3M17 21L13.5 3M12 6v3M12 12v3M12 18v2"/>',
+  mtb:'<circle cx="5.8" cy="15.5" r="3.8"/><circle cx="18.2" cy="15.5" r="3.8"/><path d="M5.8 15.5l5-8h5.5l2 8M9.5 7.5h3.2M15.3 7.5l-2.5 8"/>',
+  gravel:'<circle cx="5.8" cy="15.5" r="3.8"/><circle cx="18.2" cy="15.5" r="3.8"/><path d="M5.8 15.5l5-8h5.5l2 8M9.5 7.5h3.2M15.3 7.5l-2.5 8M3 19h2.8M16.4 19h4"/>',
+  rest:'<path d="M21 12.8A8 8 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z"/>'
+};
+function moonSVG(full){
+  return full
+    ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A8 8 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A8 8 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z"/></svg>';
+}
+
+/* ---------- nav ---------- */
+const tabs = document.querySelectorAll('.tab');
+const views = document.querySelectorAll('.view');
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.classList.remove('active'));
+  views.forEach(v=>v.classList.remove('active'));
+  t.classList.add('active');
+  const v = document.getElementById(t.dataset.view);
+  v.classList.add('active');
+  v.classList.remove('animate'); void v.offsetWidth; v.classList.add('animate');
+  window.scrollTo({top:0});
+  if(t.dataset.view==='weekly') drawLoad();
+}));
+
+/* ---------- clock + date ---------- */
+function pad(n){return String(n).padStart(2,'0');}
+function tickClock(){
+  const d=new Date();
+  document.getElementById('clock').textContent = pad(d.getHours())+':'+pad(d.getMinutes());
+}
+tickClock(); setInterval(tickClock,15000);
+(function(){
+  const d=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('todayStr').textContent =
+    days[d.getDay()]+' '+pad(d.getDate())+' '+mon[d.getMonth()]+' · '+d.getFullYear();
+})();
+
+/* ---------- activity chips ---------- */
+const acts=[['run','Run'],['trail','Trail'],['strength','Strength'],['road','Road'],['mtb','MTB'],['gravel','Gravel'],['rest','Rest']];
+const chipBox=document.getElementById('actChips');
+acts.forEach((a,i)=>{
+  const b=document.createElement('button');
+  b.type='button';b.className='chip'+(i===0?' on':'');b.dataset.k=a[0];
+  b.innerHTML='<svg viewBox="0 0 24 24">'+icons[a[0]]+'</svg>'+a[1];
+  b.addEventListener('click',()=>{
+    chipBox.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+  });
+  chipBox.appendChild(b);
+});
+
+/* ---------- effort slider ---------- */
+const effort=document.getElementById('effort');
+const effortNum=document.getElementById('effortNum');
+function fillRange(el){
+  const pct=(el.value-el.min)/(el.max-el.min)*100;
+  el.style.background='linear-gradient(90deg,var(--accent) '+pct+'%,var(--surface) '+pct+'%)';
+}
+effort.addEventListener('input',()=>{effortNum.textContent=effort.value;fillRange(effort);});
+fillRange(effort);
+
+/* ---------- sleep moons (form) ---------- */
+const moonBox=document.getElementById('moons');
+const sleepWords=['','Very poor','Poor','Fair','Good','Excellent'];
+let sleepVal=4;
+function renderMoons(){
+  moonBox.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const b=document.createElement('button');
+    b.type='button';b.className='moon'+(i<=sleepVal?' on':'');
+    b.innerHTML=moonSVG(i<=sleepVal);
+    b.addEventListener('click',()=>{sleepVal=i;renderMoons();document.getElementById('sleepWord').textContent=sleepWords[sleepVal];});
+    moonBox.appendChild(b);
+  }
+}
+renderMoons();
+
+/* ---------- hours stepper ---------- */
+let hours=7.5;
+const hoursEl=document.getElementById('hours');
+document.querySelectorAll('.stepper button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    hours=Math.min(14,Math.max(0,hours+parseFloat(b.dataset.step)*0.5));
+    hoursEl.textContent=hours.toFixed(1).replace('.0','');
+  });
+});
+
+/* ---------- write / voice toggle per feelings field ---------- */
+document.querySelectorAll('#logForm .field .modetog').forEach(tog=>{
+  const field=tog.closest('.field');
+  const ta=field.querySelector('textarea');
+  const voice=field.querySelector('.voice');
+  setupVoice(voice);
+  tog.querySelectorAll('.mt').forEach(btn=>btn.addEventListener('click',()=>{
+    tog.querySelectorAll('.mt').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on');
+    const isVoice=btn.dataset.mode==='voice';
+    ta.hidden=isVoice;
+    voice.hidden=!isVoice;
+  }));
+});
+
+/* ---------- reusable voice recorder ---------- */
+function setupVoice(box){
+  let secs=0, timer=null, recBars=[], playTimer=null;
+  const micSVG='<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  const stopSVG='<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>';
+  const playSVG='<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>';
+  function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+  function renderIdle(){
+    box.className='voice';
+    box.innerHTML='<button type="button" class="vbtn vrec">'+micSVG+'</button>'+
+      '<div class="vmain"><div class="vhint">Tap to record</div></div>';
+    box.querySelector('.vrec').onclick=startRec;
+  }
+  function renderRec(){
+    box.className='voice live';
+    let bars='';for(let i=0;i<32;i++)bars+='<i></i>';
+    box.innerHTML='<button type="button" class="vbtn stop vstop">'+stopSVG+'</button>'+
+      '<div class="vmain"><div class="vrow"><span class="recdot"></span><span class="vtime"><span class="vt">0:00</span><small>RECORDING</small></span></div>'+
+      '<div class="wave vwave">'+bars+'</div></div>';
+    box.querySelector('.vstop').onclick=stopRec;
+    recBars=[...box.querySelectorAll('.vwave i')];
+    animateWave();
+  }
+  function animateWave(){recBars.forEach(b=>{b.style.height=(6+Math.random()*22)+'px';b.style.opacity=(.45+Math.random()*.55).toFixed(2);});}
+  function startRec(){secs=0;renderRec();timer=setInterval(()=>{secs++;const t=box.querySelector('.vt');if(t)t.textContent=fmt(secs);animateWave();},650);}
+  function stopRec(){clearInterval(timer);if(secs<1)secs=1;renderSaved();}
+  function renderSaved(){
+    box.className='voice';
+    let bars='';for(let i=0;i<32;i++){const h=6+Math.abs(Math.sin(i*0.9))*18+Math.random()*7;bars+='<i style="height:'+h.toFixed(0)+'px"></i>';}
+    box.innerHTML='<button type="button" class="vbtn play vplay">'+playSVG+'</button>'+
+      '<div class="vmain"><div class="wave dim vsaved">'+bars+'</div></div>'+
+      '<span class="vtime" style="font-size:14px">'+fmt(secs)+'</span>'+
+      '<button type="button" class="vdel">✕</button>';
+    box.querySelector('.vdel').onclick=()=>{clearInterval(playTimer);renderIdle();};
+    box.querySelector('.vplay').onclick=playSaved;
+  }
+  function playSaved(){
+    const bars=[...box.querySelectorAll('.vsaved i')];
+    bars.forEach(b=>b.classList.remove('played'));
+    let i=0;const step=Math.max(45,(secs*1000)/bars.length);
+    clearInterval(playTimer);
+    playTimer=setInterval(()=>{
+      if(i>=bars.length){clearInterval(playTimer);setTimeout(()=>bars.forEach(b=>b.classList.remove('played')),450);return;}
+      bars[i].classList.add('played');i++;
+    },step);
+  }
+  renderIdle();
+}
+
+/* ---------- submit ---------- */
+const toast=document.getElementById('toast');
+document.getElementById('logForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2600);
+});
+
+/* ---------- daily moons (read) : 4/5 ---------- */
+(function(){
+  const box=document.getElementById('dailyMoons');
+  for(let i=1;i<=5;i++){
+    const s=document.createElement('span');
+    s.className=i<=4?'':'empty';
+    s.innerHTML=moonSVG(i<=4);
+    box.appendChild(s);
+  }
+})();
+
+/* ---------- weekly load chart ---------- */
+// minutes per day: Mon..Sun
+const loadData=[
+  {d:'M',min:0,we:false},
+  {d:'T',min:135,we:false},
+  {d:'W',min:55,we:false},
+  {d:'T',min:90,we:false},
+  {d:'F',min:0,we:false},
+  {d:'S',min:140,we:true},
+  {d:'S',min:60,we:true}
+];
+function drawLoad(){
+  const box=document.getElementById('loadChart');
+  const max=Math.max(...loadData.map(x=>x.min));
+  box.innerHTML='';
+  loadData.forEach(x=>{
+    const day=document.createElement('div');
+    day.className='day'+(x.we?' weekend':'');
+    const track=document.createElement('div');track.className='track';
+    const wrap=document.createElement('div');wrap.className='barwrap';
+    const bar=document.createElement('div');
+    bar.className='bar'+(x.we?' we':'')+(x.min===0?' zero':'');
+    const h=x.min===0?3:Math.round(x.min/max*100);
+    bar.style.height=(x.min===0?'3px':h+'%');
+    if(x.min>0){const cap=document.createElement('div');cap.className='cap';cap.textContent=x.min+"'";bar.appendChild(cap);}
+    wrap.appendChild(bar);track.appendChild(wrap);
+    const lab=document.createElement('div');lab.className='dlabel';lab.textContent=x.d;
+    day.appendChild(track);day.appendChild(lab);
+    box.appendChild(day);
+  });
+}
+
+/* entrance animation on first paint (resting state stays visible if throttled) */
+document.getElementById('feedback').classList.add('animate');
+</script>
+</body>
+</html>

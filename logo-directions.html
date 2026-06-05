@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JRNL · Logo Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#1a1a1a;--surface:#242424;--surface-2:#2c2a27;--line:#3a3733;--line-strong:#4a463f;
+    --txt:#ECE8E3;--txt-2:#9a9389;--txt-3:#6b655c;--accent:#E85A1A;
+    --disp:"Barlow Condensed",sans-serif;--body:"Barlow",sans-serif;--mono:"JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--txt);font-family:var(--body);-webkit-font-smoothing:antialiased;line-height:1.5;}
+  ::selection{background:var(--accent);color:#fff;}
+  .wrap{max-width:1180px;margin:0 auto;padding:54px 28px 90px;}
+
+  .head{margin-bottom:44px;border-bottom:1px solid var(--line);padding-bottom:30px;}
+  .head .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--accent);text-transform:uppercase;margin-bottom:12px;}
+  .head h1{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.01em;font-size:clamp(38px,6vw,62px);line-height:.92;}
+  .head p{max-width:640px;margin-top:16px;color:var(--txt-2);font-size:15.5px;}
+  .head p b{color:var(--txt);font-weight:600;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);}
+  .card{background:var(--surface);padding:0;display:flex;flex-direction:column;position:relative;}
+  .card.pick{outline:2px solid var(--accent);outline-offset:-2px;z-index:2;}
+  .pickbadge{position:absolute;top:0;right:0;background:var(--accent);color:#fff;font-family:var(--disp);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:11px;padding:6px 12px;}
+
+  /* big mark stage */
+  .stage{height:188px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);color:var(--accent);}
+  .stage svg{width:118px;height:118px;display:block;}
+
+  /* lockup */
+  .lockup{display:flex;align-items:center;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line);}
+  .lockup .lk-mark{width:38px;height:38px;color:var(--accent);flex-shrink:0;}
+  .lockup .lk-word{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:30px;line-height:.86;}
+  .lockup .lk-word small{display:block;font-family:var(--mono);font-weight:400;font-size:8.5px;letter-spacing:.2em;color:var(--txt-3);margin-top:5px;white-space:nowrap;}
+
+  /* app icon / favicon tests */
+  .icons{display:flex;align-items:center;gap:14px;padding:20px 24px;border-bottom:1px solid var(--line);}
+  .tile{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .tile svg{width:26px;height:26px;}
+  .tile.on-acc{background:var(--accent);color:#fff;}
+  .tile.on-dark{background:var(--bg);border:1px solid var(--line-strong);color:var(--accent);}
+  .fav{width:22px;height:22px;border-radius:5px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;}
+  .fav svg{width:13px;height:13px;}
+  .icons .cap{font-family:var(--mono);font-size:9.5px;color:var(--txt-3);letter-spacing:.08em;text-transform:uppercase;margin-left:auto;text-align:right;line-height:1.5;}
+
+  /* meta */
+  .meta{padding:20px 24px 24px;flex:1;}
+  .meta .cnum{font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.1em;}
+  .meta .cname{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:20px;margin:4px 0 9px;display:flex;align-items:center;gap:10px;}
+  .meta .cname .tick{width:9px;height:9px;background:var(--accent);transform:rotate(45deg);flex-shrink:0;}
+  .meta p{font-size:14px;color:var(--txt-2);line-height:1.55;}
+  .meta p em{color:var(--txt);font-style:normal;font-weight:500;}
+
+  .foot{margin-top:42px;background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);padding:24px 26px;}
+  .foot .fh{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+  .foot .fh .tick{width:10px;height:10px;background:var(--accent);transform:rotate(45deg);}
+  .foot p{font-size:15px;color:var(--txt);line-height:1.6;max-width:760px;}
+  .foot p + p{margin-top:10px;color:var(--txt-2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="kicker">Brand · Logo exploration</div>
+    <h1>JRNL Logo Directions</h1>
+    <p>Five marks drawn from the app's own world — <b>anthracite, a single high-altitude orange, condensed display type</b>. Each is shown as a standalone mark, a horizontal lockup, and at app-icon / favicon scale to confirm it survives shrinking. No new colors or styles introduced.</p>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="foot">
+    <div class="fh"><span class="tick"></span>Recommendation</div>
+    <p>Ship the <strong>Cairn</strong>. A cairn is the stacked-stone marker climbers and trail runners build to mark a route where there's no path — which is exactly what a training journal is: the markers you leave to find your way back and forward. It's conceptually precise, unmistakably mountain without a literal peak (which every outdoor brand uses), and it reduces cleanly to three stacked blocks at favicon size.</p>
+    <p>If you want something flatter and more system-like, the <strong>Gain bars</strong> are the safe alt — they echo the weekly-load chart already in the app, tying the logo directly to the product. Keep the current diamond only as a fallback.</p>
+  </div>
+</div>
+
+<script>
+const marks = {
+  // 01 — Cairn: stacked trail-marker stones
+  cairn:'<polygon points="23,84 77,84 70,69 30,69"/><polygon points="31,65 67,65 62,52 34,52"/><polygon points="41,48 73,48 68,36 44,36"/><polygon points="48,32 64,32 60,22 50,22"/>',
+  // 02 — Gain bars: rising elevation / load chart echo
+  gain:'<rect x="16" y="62" width="13" height="22"/><rect x="35" y="50" width="13" height="34"/><rect x="54" y="36" width="13" height="48"/><rect x="73" y="20" width="13" height="64"/>',
+  // 03 — Summit: bold mountain silhouette
+  summit:'<path d="M8 82 L37 30 L52 53 L66 24 L92 82 Z"/>',
+  // 04 — Contour: nested peaks / topographic lines
+  contour:'<g fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M22 78 L50 44 L78 78"/><path d="M34 78 L50 59 L66 78"/></g>',
+  // 05 — Waypoint: refined map marker diamond
+  waypoint:'<path d="M50 8 L92 50 L50 92 L8 50 Z M50 30 L30 50 L50 70 L70 50 Z"/>'
+};
+const wordSVG = '<svg viewBox="0 0 100 100" fill="currentColor">';
+function svg(inner){return wordSVG+inner+'</svg>';}
+
+const cards = [
+  {key:'cairn',  name:'Cairn',     pick:true,  cap:'TRAIL MARKER',  text:'Stacked stones that mark a route. The journal as the markers you leave on the mountain — <em>ownable and on-theme without a literal peak.</em>'},
+  {key:'gain',   name:'Gain bars', pick:false, cap:'LOAD / GAIN',   text:'Rising bars echoing the weekly-load chart inside the app. <em>Ties the logo directly to the product\u2019s core view.</em>'},
+  {key:'summit', name:'Summit',    pick:false, cap:'PEAK',          text:'A bold, legible mountain silhouette. Instantly readable — but the most expected route for an outdoor brand.'},
+  {key:'contour',name:'Contour',   pick:false, cap:'TOPO LINES',    text:'Nested peaks reading as topographic contour lines. <em>Field-map texture;</em> needs care at the smallest sizes.'},
+  {key:'waypoint',name:'Waypoint', pick:false, cap:'MAP PIN',       text:'A refined evolution of the current diamond — a map waypoint with a cut center. Familiar, neutral, system-like.'}
+];
+
+const grid = document.getElementById('grid');
+cards.forEach((c,i)=>{
+  const m = svg(marks[c.key]);
+  const el = document.createElement('div');
+  el.className = 'card' + (c.pick?' pick':'');
+  el.innerHTML =
+    (c.pick?'<div class="pickbadge">Recommended</div>':'') +
+    '<div class="stage">'+m+'</div>' +
+    '<div class="lockup"><span class="lk-mark">'+m+'</span><span class="lk-word">JRNL<small>TRAINING JOURNAL</small></span></div>' +
+    '<div class="icons">' +
+      '<span class="tile on-acc" style="color:#fff">'+svg(marks[c.key])+'</span>' +
+      '<span class="tile on-dark">'+m+'</span>' +
+      '<span class="fav">'+svg(marks[c.key])+'</span>' +
+      '<span class="cap">APP ICON<br/>FAVICON 22PX</span>' +
+    '</div>' +
+    '<div class="meta"><span class="cnum">0'+(i+1)+'</span>' +
+      '<div class="cname">'+(c.pick?'<span class="tick"></span>':'')+c.name+'</div>' +
+      '<p>'+c.text+'</p></div>';
+  grid.appendChild(el);
+});
+// white mark inside orange app-icon tiles
+document.querySelectorAll('.tile.on-acc svg, .fav svg').forEach(s=>{
+  s.querySelectorAll('[fill]').forEach(p=>{if(p.getAttribute('fill')!=='none')p.setAttribute('fill','#fff');});
+  s.querySelectorAll('[stroke]').forEach(p=>p.setAttribute('stroke','#fff'));
+});
+</script>
+</body>
+</html>
