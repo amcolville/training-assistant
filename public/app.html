@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>JRNL · Training Journal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231a1a1a'/%3E%3Cpath fill-rule='evenodd' fill='%23E85A1A' d='M50 14 L86 50 L50 86 L14 50 Z M50 33 L33 50 L50 67 L67 50 Z'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:#1a1a1a; --surface:#242424; --surface-2:#2c2a27; --surface-3:#322f2b;
+  --line:#3a3733; --line-strong:#4a463f;
+  --txt:#ECE8E3; --txt-2:#9a9389; --txt-3:#6b655c;
+  --accent:#E85A1A; --accent-dim:#b8480f;
+  --good:#7e9b6a; --warn:#d8a23a; --alert:#c8523a;
+  --disp:"Barlow Condensed",sans-serif; --body:"Barlow",sans-serif; --mono:"JetBrains Mono",monospace;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{background:var(--bg);color:var(--txt);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;padding-top:calc(64px + var(--safe-top));min-height:100vh;}
+::selection{background:var(--accent);color:#fff;}
+
+/* NAV */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(26,26,26,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:var(--safe-top);}
+.topbar-inner{height:64px;display:flex;align-items:stretch;}
+.brand{display:flex;align-items:center;gap:10px;padding:0 20px;flex-shrink:0;border-right:1px solid var(--line);text-decoration:none;}
+.brand .mark{width:18px;height:18px;fill:var(--accent);}
+.brand .name{font-family:var(--disp);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:17px;color:var(--txt);}
+.brand .name small{display:block;font-size:9px;color:var(--txt-3);letter-spacing:.22em;margin-top:2px;}
+.tabs{display:flex;align-items:stretch;overflow-x:auto;scrollbar-width:none;flex:1;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{appearance:none;background:none;border:none;cursor:pointer;font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);padding:0 18px;display:flex;align-items:center;gap:8px;position:relative;white-space:nowrap;transition:color .18s;}
+.tab .idx{font-family:var(--mono);font-size:10px;color:var(--txt-3);}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--txt);}
+.tab.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;padding:0 18px;border-left:1px solid var(--line);flex-shrink:0;}
+.clock{font-family:var(--mono);font-size:12px;color:var(--txt-2);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(126,155,106,.18);}
+@media(max-width:600px){.nav-right{display:none;}.tab{padding:0 12px;font-size:12px;}.brand{padding:0 14px;}}
+
+/* LAYOUT */
+.wrap{max-width:1080px;margin:0 auto;padding:34px 22px calc(80px + var(--safe-bot));}
+@media(max-width:600px){.wrap{padding:22px 14px calc(70px + var(--safe-bot));}}
+.view{display:none;}
+.view.active{display:block;animation:rise .38s cubic-bezier(.2,.7,.2,1);}
+@keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* PAGE HEAD */
+.phead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:32px;flex-wrap:wrap;}
+.phead .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:5px;}
+.phead h1{font-family:var(--disp);font-weight:700;letter-spacing:.01em;line-height:.9;text-transform:uppercase;font-size:clamp(32px,6vw,54px);}
+.phead .sub{font-family:var(--mono);font-size:11px;color:var(--txt-2);}
+
+/* SECTION LABEL */
+.slabel{font-family:var(--disp);font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:12px;color:var(--txt-2);display:flex;align-items:center;gap:10px;margin:30px 0 14px;}
+.slabel::after{content:"";flex:1;height:1px;background:var(--line);}
+.slabel .n{font-family:var(--mono);color:var(--txt-3);font-size:10px;}
+
+/* FORM */
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px 36px;}
+@media(max-width:720px){.formgrid{grid-template-columns:1fr;}}
+.field{margin-bottom:22px;}
+.flabel{font-family:var(--disp);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--txt-2);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.flabel .hint{font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.05em;text-transform:none;}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{appearance:none;cursor:pointer;background:var(--surface);border:1px solid var(--line);color:var(--txt-2);font-family:var(--disp);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:9px 13px;display:flex;align-items:center;gap:7px;transition:all .15s;}
+.chip svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.chip:hover{border-color:var(--line-strong);color:var(--txt);}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* EFFORT SLIDER */
+.effort-wrap{display:flex;align-items:center;gap:18px;}
+.effort-wrap .big{font-family:var(--mono);font-weight:700;font-size:50px;line-height:.8;width:96px;flex-shrink:0;}
+.effort-wrap .big span{color:var(--txt-3);font-size:22px;font-weight:400;}
+.effort-wrap .col{flex:1;}
+.srange{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:var(--surface);border:1px solid var(--line);outline:none;cursor:pointer;}
+.srange::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:28px;background:var(--accent);border:2px solid var(--bg);}
+.srange::-moz-range-thumb{width:18px;height:26px;background:var(--accent);border:2px solid var(--bg);border-radius:0;}
+.sscale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--txt-3);margin-top:6px;}
+
+/* TEXTAREA */
+textarea{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--txt);font-family:var(--body);font-size:15px;line-height:1.5;padding:12px 13px;resize:vertical;min-height:80px;transition:border-color .15s;-webkit-appearance:none;}
+textarea:focus{outline:none;border-color:var(--accent-dim);}
+textarea::placeholder{color:var(--txt-3);}
+
+/* STEPPER */
+.stepper{display:inline-flex;align-items:stretch;border:1px solid var(--line);background:var(--surface);}
+.stepper button{appearance:none;background:none;border:none;cursor:pointer;color:var(--txt);width:44px;font-family:var(--mono);font-size:20px;transition:background .14s;}
+.stepper button:hover{background:var(--surface-2);color:var(--accent);}
+.stepper .val{display:flex;align-items:baseline;gap:3px;justify-content:center;min-width:88px;border-left:1px solid var(--line);border-right:1px solid var(--line);font-family:var(--mono);font-weight:700;font-size:22px;padding:8px 0;}
+.stepper .val small{font-size:11px;color:var(--txt-3);font-weight:400;}
+
+/* MOONS */
+.moons{display:flex;gap:9px;}
+.moon{appearance:none;background:none;border:none;cursor:pointer;padding:0;color:var(--line-strong);transition:color .15s,transform .1s;}
+.moon svg{width:32px;height:32px;display:block;}
+.moon:hover{transform:translateY(-2px);}
+.moon.on{color:var(--accent);}
+
+/* AUDIO RECORDER — el corazón de la app */
+.recorder{background:var(--surface);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px;}
+.rec-top{display:flex;align-items:center;gap:14px;}
+.rec-btn{appearance:none;cursor:pointer;flex-shrink:0;width:52px;height:52px;border-radius:50%;border:none;background:var(--accent);display:flex;align-items:center;justify-content:center;transition:background .15s,transform .08s;-webkit-tap-highlight-color:transparent;}
+.rec-btn:hover{background:#ff6a26;}
+.rec-btn:active{transform:scale(.94);}
+.rec-btn svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.rec-btn.recording{background:var(--alert);}
+.rec-btn.recording svg{fill:#fff;stroke:none;}
+.rec-btn.disabled{background:var(--surface-2);border:1px solid var(--line-strong);cursor:not-allowed;}
+.rec-btn.disabled svg{stroke:var(--txt-3);}
+.rec-info{flex:1;}
+.rec-status{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-3);margin-bottom:3px;}
+.rec-status.live{color:var(--alert);}
+.rec-time{font-family:var(--mono);font-weight:700;font-size:22px;color:var(--txt);}
+.rec-time small{color:var(--txt-3);font-weight:400;font-size:11px;margin-left:6px;}
+
+/* Waveform */
+.waveform{display:flex;align-items:center;gap:2px;height:36px;overflow:hidden;}
+.waveform .bar{width:3px;background:var(--line-strong);border-radius:1px;transition:height .1s ease;}
+.waveform.live .bar{background:var(--accent);}
+
+/* Transcripción */
+.rec-transcript{background:var(--surface-2);border:1px solid var(--line);padding:12px 14px;font-size:14px;color:var(--txt-2);font-style:italic;line-height:1.55;min-height:44px;display:none;}
+.rec-transcript.visible{display:block;}
+.rec-transcript.loading{color:var(--txt-3);}
+
+/* Audio actions */
+.rec-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.rec-action{appearance:none;cursor:pointer;background:none;border:1px solid var(--line);color:var(--txt-2);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;transition:all .14s;}
+.rec-action:hover{border-color:var(--accent);color:var(--accent);}
+.rec-action.danger:hover{border-color:var(--alert);color:var(--alert);}
+
+/* SUBMIT */
+.submit{appearance:none;cursor:pointer;width:100%;border:none;background:var(--accent);color:#fff;font-family:var(--disp);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:18px;padding:18px;margin-top:12px;transition:background .15s,transform .08s;display:flex;align-items:center;justify-content:center;gap:12px;-webkit-tap-highlight-color:transparent;}
+.submit:hover{background:#ff6a26;}
+.submit:active{transform:translateY(1px);}
+.submit:disabled{background:var(--surface-2);color:var(--txt-3);cursor:not-allowed;transform:none;}
+.submit svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2;}
+.submit .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(26px + var(--safe-bot));left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface-2);border:1px solid var(--accent);color:var(--txt);font-family:var(--mono);font-size:12px;padding:12px 18px;display:flex;align-items:center;gap:9px;opacity:0;pointer-events:none;transition:opacity .28s,transform .28s;z-index:100;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast .dot{width:8px;height:8px;background:var(--accent);transform:rotate(45deg);}
+.toast.error{border-color:var(--alert);}
+.toast.error .dot{background:var(--alert);}
+
+/* PANELS */
+.panel{background:var(--surface);border:1px solid var(--line);padding:20px;}
+.panel+.panel{margin-top:1px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+.grid2 .panel{border:none;}
+.blockh{font-family:var(--disp);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:9px;}
+.blockh .tick{width:9px;height:9px;background:var(--accent);transform:rotate(45deg);}
+
+/* METRIC CARDS */
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+@media(max-width:720px){.metrics{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:400px){.metrics{grid-template-columns:repeat(2,1fr);}}
+.mcard{background:var(--surface);padding:16px 14px;}
+.mcard .v{font-family:var(--mono);font-weight:700;font-size:26px;line-height:1;}
+.mcard .v small{font-size:13px;color:var(--txt-3);font-weight:400;}
+.mcard .l{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);margin-top:8px;}
+
+/* SENS ROW */
+.sens-row{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);}
+.sens-row:last-child{border-bottom:none;}
+.sens-row .k{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);padding-top:2px;}
+.sens-row .vtxt{font-size:14px;color:var(--txt);line-height:1.5;}
+@media(max-width:480px){.sens-row{grid-template-columns:1fr;gap:4px;}}
+
+/* EFFORT READ */
+.effort-read{display:flex;align-items:center;gap:16px;}
+.effort-read .num{font-family:var(--mono);font-weight:700;font-size:38px;line-height:.85;}
+.effort-read .num span{font-size:17px;color:var(--txt-3);font-weight:400;}
+.effort-read .bar{flex:1;height:7px;background:var(--surface-2);border:1px solid var(--line);position:relative;overflow:hidden;}
+.effort-read .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);}
+
+/* SLEEP READ */
+.sleep-read{display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end;}
+.sleep-read .item .v{font-family:var(--mono);font-weight:700;font-size:26px;line-height:1;}
+.sleep-read .item .v small{font-size:12px;color:var(--txt-3);font-weight:400;}
+.sleep-read .item .l{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);margin-top:7px;}
+.moons-read{display:flex;gap:5px;color:var(--accent);}
+.moons-read svg{width:20px;height:20px;}
+.moons-read .empty{color:var(--line-strong);}
+
+/* RECS */
+.recs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+@media(max-width:600px){.recs-grid{grid-template-columns:1fr;}}
+.recs-grid .panel{border:none;background:var(--surface-3);}
+.rec-head{font-family:var(--disp);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--accent);margin-bottom:9px;}
+.rec-body{font-size:14px;color:var(--txt);line-height:1.55;}
+
+/* NOTA */
+.nota{border-left:3px solid var(--accent);background:var(--surface);padding:14px 18px;margin-top:1px;font-style:italic;font-size:14px;color:var(--txt-2);line-height:1.6;}
+.nota b{font-style:normal;font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:10px;color:var(--txt-3);display:block;margin-bottom:4px;}
+
+/* FOLLOW-UP QUESTION */
+.followup{background:var(--surface-2);border:1px solid var(--warn);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;}
+.followup .icon{color:var(--warn);flex-shrink:0;font-family:var(--mono);font-size:16px;margin-top:1px;}
+.followup .text{font-size:14px;color:var(--txt);line-height:1.55;}
+
+/* WEEKLY */
+.countdown{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);padding:10px 15px;}
+.countdown .big{font-family:var(--mono);font-weight:700;font-size:26px;color:var(--accent);}
+.countdown .lbl{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);line-height:1.3;}
+
+table.brk{width:100%;border-collapse:collapse;font-size:14px;}
+table.brk th{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:var(--txt-2);text-align:right;padding:0 0 10px;border-bottom:1px solid var(--line-strong);}
+table.brk th:first-child{text-align:left;}
+table.brk td{font-family:var(--mono);font-size:14px;text-align:right;padding:12px 0;border-bottom:1px solid var(--line);}
+table.brk td:first-child{text-align:left;font-family:var(--body);font-weight:500;display:flex;align-items:center;gap:9px;}
+table.brk td .dot{width:8px;height:8px;flex-shrink:0;}
+table.brk tr.total td{font-weight:700;border-bottom:none;border-top:1px solid var(--line-strong);}
+table.brk tr.total{background:var(--surface-2);}
+table.brk tr.total td{padding:12px 10px;}
+table.brk th:last-child,table.brk td:last-child{padding-right:10px;}
+table.brk th:first-child,table.brk tr.total td:first-child{padding-left:10px;}
+
+.load{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px;}
+.load .day{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;}
+.load .track{width:100%;flex:1;display:flex;align-items:flex-end;}
+.load .barwrap{width:100%;display:flex;align-items:flex-end;justify-content:center;height:100%;}
+.load .bar{width:76%;background:var(--accent);position:relative;transition:height .5s cubic-bezier(.2,.7,.2,1);}
+.load .bar.we{background:var(--accent-dim);}
+.load .bar .cap{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt-2);}
+.load .bar.zero{background:var(--line);height:3px!important;}
+.load .dlabel{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.05em;color:var(--txt-2);}
+.load .day.we .dlabel{color:var(--accent);}
+
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+@media(max-width:640px){.three{grid-template-columns:1fr;}}
+.three .panel{border:none;}
+.three .ph{font-family:var(--disp);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:var(--accent);margin-bottom:8px;}
+.three .pt{font-size:14px;color:var(--txt);line-height:1.5;}
+.three .stage{font-family:var(--mono);font-size:10px;color:var(--txt-3);display:block;margin-bottom:6px;}
+
+.insight{background:var(--surface-3);border:1px solid var(--line);border-left:3px solid var(--accent);padding:18px 20px;}
+.insight p{font-size:14px;line-height:1.6;color:var(--txt);}
+
+.reclist{list-style:none;display:flex;flex-direction:column;gap:1px;}
+.reclist li{background:var(--surface);border:1px solid var(--line);padding:13px 16px;display:flex;align-items:flex-start;gap:12px;}
+.reclist .tag{font-family:var(--disp);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:11px;padding:4px 8px;flex-shrink:0;min-width:80px;text-align:center;}
+.tag.prio{background:var(--accent);color:#fff;}
+.tag.mod{background:rgba(216,162,58,.16);color:var(--warn);border:1px solid rgba(216,162,58,.4);}
+.tag.watch{background:rgba(200,82,58,.14);color:var(--alert);border:1px solid rgba(200,82,58,.4);}
+.reclist .rtxt{font-size:14px;line-height:1.5;color:var(--txt);padding-top:2px;}
+
+/* LOADING STATE */
+.loading-state{display:flex;flex-direction:column;align-items:center;gap:18px;padding:60px 20px;text-align:center;}
+.loading-state .spinner{width:36px;height:36px;border:2px solid var(--line-strong);border-top-color:var(--accent);border-radius:50%;animation:rot .8s linear infinite;}
+.loading-state p{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--txt-2);text-transform:uppercase;}
+
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;gap:14px;padding:50px 20px;text-align:center;}
+.empty-state .mark{font-family:var(--mono);font-size:32px;color:var(--txt-3);}
+.empty-state p{font-size:15px;color:var(--txt-2);max-width:300px;}
+.empty-state small{font-family:var(--mono);font-size:11px;color:var(--txt-3);}
+
+/* SESSION LIST (daily) */
+.session-list{display:flex;flex-direction:column;gap:1px;}
+.session-item{background:var(--surface);border:1px solid var(--line);padding:16px 18px;cursor:pointer;transition:border-color .15s;}
+.session-item:hover{border-color:var(--line-strong);}
+.session-item.active{border-color:var(--accent);}
+.session-item .si-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.session-item .si-type{font-family:var(--disp);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:14px;}
+.session-item .si-date{font-family:var(--mono);font-size:11px;color:var(--txt-3);}
+.session-item .si-meta{font-family:var(--mono);font-size:12px;color:var(--txt-2);display:flex;gap:14px;flex-wrap:wrap;}
+
+[hidden]{display:none!important;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="brand">
+      <svg class="mark" viewBox="0 0 100 100"><path fill-rule="evenodd" d="M50 8 L92 50 L50 92 L8 50 Z M50 30 L30 50 L50 70 L70 50 Z"/></svg>
+      <div class="name">JRNL<small>TRAINING JOURNAL</small></div>
+    </a>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="feedback"><span class="idx">01</span>Feelings</button>
+      <button class="tab" data-view="daily"><span class="idx">02</span>Daily</button>
+      <button class="tab" data-view="weekly"><span class="idx">03</span>Weekly</button>
+    </nav>
+    <div class="nav-right">
+      <span class="status-dot"></span>
+      <span class="clock" id="clock">--:--</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ══ SECTION 1: FEEDBACK ══════════════════════════════════════════════ -->
+<section class="view active" id="feedback">
+  <div class="wrap">
+    <div class="phead">
+      <div>
+        <div class="kicker">Post-session log</div>
+        <h1>Feelings</h1>
+      </div>
+      <div class="sub" id="todayStr">—</div>
+    </div>
+
+    <form id="logForm" autocomplete="off">
+      <div class="formgrid">
+        <!-- COL IZQUIERDA -->
+        <div>
+          <div class="field">
+            <div class="flabel">Activity type</div>
+            <div class="chips" id="actChips"></div>
+          </div>
+
+          <div class="field">
+            <div class="flabel">Perceived effort <span class="hint" id="effortLabel">RPE 6 — Moderate</span></div>
+            <div class="effort-wrap">
+              <div class="big"><span id="effortNum">6</span><span>/10</span></div>
+              <div class="col">
+                <input type="range" class="srange" id="effort" min="1" max="10" value="6" />
+                <div class="sscale"><span>EASY</span><span>MODERATE</span><span>MAX</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="flabel">Sleep quality <span class="hint" id="sleepWord">Good</span></div>
+            <div class="moons" id="moons"></div>
+          </div>
+
+          <div class="field">
+            <div class="flabel">Sleep hours</div>
+            <div class="stepper">
+              <button type="button" data-step="-1">−</button>
+              <div class="val"><span id="hours">7.5</span><small>h</small></div>
+              <button type="button" data-step="1">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="flabel">Metrics <span class="hint">optional</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">km</div>
+                <input type="number" id="fDistance" min="0" step="0.1" placeholder="18.0" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-size:15px;padding:10px 12px;outline:none;-webkit-appearance:none;" />
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">D+ (m)</div>
+                <input type="number" id="fElevation" min="0" step="10" placeholder="900" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-size:15px;padding:10px 12px;outline:none;-webkit-appearance:none;" />
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">duration (min)</div>
+                <input type="number" id="fDuration" min="0" step="5" placeholder="135" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-size:15px;padding:10px 12px;outline:none;-webkit-appearance:none;" />
+              </div>
+              <div>
+                <div style="font-family:var(--mono);font-size:10px;color:var(--txt-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">HR avg (bpm)</div>
+                <input type="number" id="fHR" min="0" step="1" placeholder="148" style="width:100%;background:var(--surface);border:1px solid var(--line);color:var(--txt);font-family:var(--mono);font-size:15px;padding:10px 12px;outline:none;-webkit-appearance:none;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL DERECHA -->
+        <div>
+          <div class="field">
+            <div class="flabel">Voice note</div>
+            <div class="recorder" id="recorder">
+              <div class="rec-top">
+                <button type="button" class="rec-btn" id="recBtn">
+                  <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+                </button>
+                <div class="rec-info">
+                  <div class="rec-status" id="recStatus">Ready to record</div>
+                  <div class="rec-time"><span id="recTime">0:00</span></div>
+                </div>
+              </div>
+              <div class="waveform" id="waveform">
+                <!-- bars generadas por JS -->
+              </div>
+              <div class="rec-transcript" id="recTranscript"></div>
+              <div class="rec-actions" id="recActions" hidden>
+                <button type="button" class="rec-action" id="rerecordBtn">↺ Re-record</button>
+                <button type="button" class="rec-action danger" id="clearAudioBtn">✕ Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="flabel">Additional notes <span class="hint">optional</span></div>
+            <textarea id="taNotes" placeholder="conditions, terrain, specific moments..." rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit" id="submitBtn">
+        <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg>
+        Log session
+      </button>
+    </form>
+
+    <!-- Resultado del análisis de Claude -->
+    <div id="analysisResult" hidden>
+      <div class="slabel" style="margin-top:40px;"><span class="n">✓</span>Session logged</div>
+      <div id="analysisContent"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 2: DAILY ══════════════════════════════════════════════════ -->
+<section class="view" id="daily">
+  <div class="wrap">
+    <div class="phead">
+      <div>
+        <div class="kicker">Daily log</div>
+        <h1 id="dailyTitle">Today</h1>
+      </div>
+      <div class="sub" id="dailyDateStr">—</div>
+    </div>
+    <div id="dailyContent">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading sessions…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 3: WEEKLY ════════════════════════════════════════════════ -->
+<section class="view" id="weekly">
+  <div class="wrap">
+    <div class="phead">
+      <div>
+        <div class="kicker">Weekly summary</div>
+        <h1 id="weeklyTitle">This week</h1>
+      </div>
+      <div class="countdown"><span class="big" id="weeksToGoal">—</span><span class="lbl">Weeks<br/>to goal</span></div>
+    </div>
+    <div id="weeklyContent">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading week…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastMsg">Session logged</span></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const API = ''; // mismo origen en Vercel
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+function pad(n){return String(n).padStart(2,'0');}
+function moonSVG(full){
+  return full
+    ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A8 8 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A8 8 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z"/></svg>';
+}
+function fmtTime(min){
+  if(!min) return '—';
+  const h=Math.floor(min/60), m=min%60;
+  return h>0 ? `${h}h ${m>0?m+'min':''}`.trim() : `${m}min`;
+}
+function fmtDate(dateStr){
+  const d = new Date(dateStr+'T12:00:00');
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${days[d.getDay()]} ${pad(d.getDate())} ${mon[d.getMonth()]}`;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function showToast(msg, isError=false){
+  const t=$('toast'), m=$('toastMsg');
+  m.textContent=msg;
+  t.className='toast'+(isError?' error':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────
+function tickClock(){
+  const d=new Date();
+  $('clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes());
+}
+tickClock(); setInterval(tickClock,15000);
+(function(){
+  const d=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  $('todayStr').textContent=`${days[d.getDay()]} ${pad(d.getDate())} ${mon[d.getMonth()]} · ${d.getFullYear()}`;
+})();
+
+// ── NAV ────────────────────────────────────────────────────────────────────
+const tabs=document.querySelectorAll('.tab'), views=document.querySelectorAll('.view');
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.classList.remove('active'));
+  views.forEach(v=>{v.classList.remove('active');});
+  t.classList.add('active');
+  const v=document.getElementById(t.dataset.view);
+  v.classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  if(t.dataset.view==='daily') loadDaily();
+  if(t.dataset.view==='weekly') loadWeekly();
+}));
+
+// ── ACTIVITY CHIPS ────────────────────────────────────────────────────────
+const actIcons={
+  trail:'<path d="M2 20h20L14.5 6l-3.5 5.5L8 7.5z"/><circle cx="6" cy="5.5" r="1.6"/>',
+  run:'<circle cx="14" cy="5" r="2.1"/><path d="M14 8l-3.5 4 3 2.4 1 5.6M10.5 12L5.5 13.4M14 14.4l4.5 1.4"/>',
+  climbing:'<path d="M12 2a2 2 0 0 1 2 2v1l3 3-2 2-3-2v3l2 4h-4l2-4V8L9 10 7 8l3-3V4a2 2 0 0 1 2-2z"/>',
+  strength:'<path d="M4 9v6M20 9v6M7 6.5v11M17 6.5v11M7 12h10"/>',
+  cycling:'<circle cx="5.8" cy="15.5" r="3.8"/><circle cx="18.2" cy="15.5" r="3.8"/><path d="M5.8 15.5l5-8h5.5l2 8"/>',
+  rest:'<path d="M21 12.8A8 8 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z"/>',
+};
+const acts=[['trail','Trail'],['run','Run'],['climbing','Climbing'],['strength','Strength'],['cycling','Cycling'],['rest','Rest']];
+let selectedActivity='trail';
+const chipBox=$('actChips');
+acts.forEach(([k,label],i)=>{
+  const b=document.createElement('button');
+  b.type='button'; b.className='chip'+(i===0?' on':''); b.dataset.k=k;
+  b.innerHTML=`<svg viewBox="0 0 24 24">${actIcons[k]||''}</svg>${label}`;
+  b.addEventListener('click',()=>{
+    chipBox.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on'); selectedActivity=k;
+  });
+  chipBox.appendChild(b);
+});
+
+// ── EFFORT SLIDER ──────────────────────────────────────────────────────────
+const effortLabels=['','Very easy','Easy','Moderate','Somewhat hard','Hard','Hard','Very hard','Very hard','Extremely hard','Maximum'];
+const effort=$('effort');
+function fillRange(el){
+  const pct=(el.value-el.min)/(el.max-el.min)*100;
+  el.style.background=`linear-gradient(90deg,var(--accent) ${pct}%,var(--surface) ${pct}%)`;
+}
+effort.addEventListener('input',()=>{
+  $('effortNum').textContent=effort.value;
+  $('effortLabel').textContent=`RPE ${effort.value} — ${effortLabels[effort.value]||''}`;
+  fillRange(effort);
+});
+fillRange(effort);
+
+// ── SLEEP MOONS ────────────────────────────────────────────────────────────
+const sleepWords=['','Very poor','Poor','Fair','Good','Excellent'];
+let sleepVal=4;
+function renderMoons(){
+  const box=$('moons'); box.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const b=document.createElement('button'); b.type='button';
+    b.className='moon'+(i<=sleepVal?' on':'');
+    b.innerHTML=moonSVG(i<=sleepVal);
+    b.addEventListener('click',()=>{sleepVal=i;renderMoons();$('sleepWord').textContent=sleepWords[sleepVal];});
+    box.appendChild(b);
+  }
+}
+renderMoons();
+
+// ── HOURS STEPPER ──────────────────────────────────────────────────────────
+let sleepHours=7.5;
+document.querySelectorAll('.stepper button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    sleepHours=Math.min(14,Math.max(0,sleepHours+parseFloat(b.dataset.step)*0.5));
+    $('hours').textContent=sleepHours.toFixed(1).replace('.0','');
+  });
+});
+
+// ── WAVEFORM INIT ──────────────────────────────────────────────────────────
+const waveformEl=$('waveform');
+const NUM_BARS=40;
+for(let i=0;i<NUM_BARS;i++){
+  const b=document.createElement('div'); b.className='bar';
+  b.style.height='4px'; waveformEl.appendChild(b);
+}
+const waveBars=[...waveformEl.querySelectorAll('.bar')];
+
+// ── AUDIO RECORDER ────────────────────────────────────────────────────────
+let mediaRecorder=null, audioChunks=[], audioBlob=null;
+let recTimer=null, recSecs=0, animFrame=null, analyser=null, dataArray=null;
+
+const recBtn=$('recBtn');
+const recStatus=$('recStatus');
+const recTimeEl=$('recTime');
+const recTranscript=$('recTranscript');
+const recActions=$('recActions');
+
+const MIC_SVG='<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+const STOP_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>';
+
+function fmtSecs(s){return `${Math.floor(s/60)}:${pad(s%60)}`;}
+
+async function startRecording(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+
+    // Waveform con Web Audio API
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const source=ctx.createMediaStreamSource(stream);
+    analyser=ctx.createAnalyser(); analyser.fftSize=64;
+    source.connect(analyser);
+    dataArray=new Uint8Array(analyser.frequencyBinCount);
+
+    const mimeType=['audio/webm','audio/mp4','audio/ogg'].find(m=>MediaRecorder.isTypeSupported(m))||'';
+    mediaRecorder=new MediaRecorder(stream,mimeType?{mimeType}:{});
+    audioChunks=[];
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+    mediaRecorder.onstop=()=>{
+      audioBlob=new Blob(audioChunks,{type:mediaRecorder.mimeType||'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      ctx.close();
+      cancelAnimationFrame(animFrame);
+      setIdleWave();
+    };
+    mediaRecorder.start(250);
+
+    // Estado visual
+    recBtn.className='rec-btn recording'; recBtn.innerHTML=STOP_SVG;
+    recStatus.textContent='Recording…'; recStatus.className='rec-status live';
+    waveformEl.className='waveform live';
+    recActions.hidden=true; recTranscript.className='rec-transcript';
+
+    // Timer
+    recSecs=0; recTimeEl.textContent='0:00';
+    recTimer=setInterval(()=>{recSecs++;recTimeEl.textContent=fmtSecs(recSecs);},1000);
+
+    // Animación waveform
+    function drawWave(){
+      animFrame=requestAnimationFrame(drawWave);
+      analyser.getByteFrequencyData(dataArray);
+      waveBars.forEach((b,i)=>{
+        const idx=Math.floor(i/NUM_BARS*dataArray.length);
+        const h=4+Math.round(dataArray[idx]/255*32);
+        b.style.height=h+'px';
+      });
+    }
+    drawWave();
+
+  }catch(err){
+    console.error('Mic error:',err);
+    showToast('Microphone access denied',true);
+  }
+}
+
+function stopRecording(){
+  if(mediaRecorder && mediaRecorder.state!=='inactive'){
+    mediaRecorder.stop();
+    clearInterval(recTimer);
+    recBtn.className='rec-btn'; recBtn.innerHTML=MIC_SVG;
+    recStatus.textContent=`Recorded · ${fmtSecs(recSecs)}`;
+    recStatus.className='rec-status';
+    waveformEl.className='waveform';
+    recActions.hidden=false;
+  }
+}
+
+function setIdleWave(){
+  waveBars.forEach((b,i)=>{
+    const h=4+Math.abs(Math.sin(i*0.7))*14+Math.abs(Math.cos(i*0.4))*8;
+    b.style.height=Math.round(h)+'px';
+  });
+}
+setIdleWave();
+
+recBtn.addEventListener('click',()=>{
+  if(mediaRecorder && mediaRecorder.state==='recording') stopRecording();
+  else startRecording();
+});
+
+$('rerecordBtn').addEventListener('click',()=>{
+  audioBlob=null; recActions.hidden=true;
+  recTranscript.className='rec-transcript';
+  recStatus.textContent='Ready to record'; recSecs=0; recTimeEl.textContent='0:00';
+  setIdleWave();
+});
+
+$('clearAudioBtn').addEventListener('click',()=>{
+  audioBlob=null; recActions.hidden=true;
+  recTranscript.className='rec-transcript';
+  recStatus.textContent='Ready to record'; recSecs=0; recTimeEl.textContent='0:00';
+  setIdleWave();
+});
+
+// ── FORM SUBMIT ────────────────────────────────────────────────────────────
+$('logForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+
+  const notes=$('taNotes').value.trim();
+  if(!audioBlob && !notes){
+    showToast('Add a voice note or text before logging',true);
+    return;
+  }
+
+  const btn=$('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> Analyzing…';
+
+  try{
+    const fd=new FormData();
+    if(audioBlob){
+      const ext=audioBlob.type.includes('mp4')?'m4a':audioBlob.type.includes('ogg')?'ogg':'webm';
+      fd.append('audio',audioBlob,`recording.${ext}`);
+    }
+    fd.append('activity_type',selectedActivity);
+    fd.append('effort_rpe',effort.value);
+    fd.append('sleep_hours',sleepHours.toString());
+    fd.append('sleep_quality',sleepVal.toString());
+    if(notes) fd.append('notes_raw',notes);
+    const dist=$('fDistance').value; if(dist) fd.append('distance_km',dist);
+    const elev=$('fElevation').value; if(elev) fd.append('elevation_m',elev);
+    const dur=$('fDuration').value; if(dur) fd.append('duration_min',dur);
+    const hr=$('fHR').value; if(hr) fd.append('hr_avg',hr);
+
+    const resp=await fetch(`${API}/api/session`,{method:'POST',body:fd});
+    const data=await resp.json();
+
+    if(!resp.ok) throw new Error(data.error||'Server error');
+
+    // Mostrar transcripción
+    if(data.transcription){
+      recTranscript.textContent=`"${data.transcription}"`;
+      recTranscript.className='rec-transcript visible';
+    }
+
+    // Mostrar análisis
+    renderAnalysis(data);
+    showToast('Session logged ✓');
+
+    // Reset form parcial
+    $('taNotes').value='';
+    audioBlob=null; recActions.hidden=true;
+    recStatus.textContent='Ready to record'; recSecs=0; recTimeEl.textContent='0:00';
+    setIdleWave();
+
+  }catch(err){
+    console.error(err);
+    showToast(err.message||'Error logging session',true);
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg> Log session';
+  }
+});
+
+function renderAnalysis(data){
+  const a=data.analysis||{};
+  const el=$('analysisResult');
+  const content=$('analysisContent');
+
+  content.innerHTML=`
+    ${a.follow_up_question?`
+    <div class="followup">
+      <span class="icon">?</span>
+      <span class="text">${a.follow_up_question}</span>
+    </div>`:''}
+    <div class="slabel" style="margin-top:20px;"><span class="n">A</span>Feelings extracted</div>
+    <div class="grid2">
+      <div class="panel">
+        ${a.physical_feelings?`<div class="sens-row"><div class="k">Physical</div><div class="vtxt">${a.physical_feelings}</div></div>`:''}
+        ${a.mental_feelings?`<div class="sens-row"><div class="k">Mental</div><div class="vtxt">${a.mental_feelings}</div></div>`:''}
+      </div>
+      <div class="panel">
+        <div class="blockh"><span class="tick"></span>Analysis</div>
+        <p style="font-size:14px;line-height:1.55;color:var(--txt);">${a.analysis||'—'}</p>
+      </div>
+    </div>
+    ${(a.next_session_rec||a.recovery_rec)?`
+    <div class="slabel"><span class="n">B</span>Recommendations</div>
+    <div class="recs-grid">
+      <div class="panel"><div class="rec-head">Next session</div><div class="rec-body">${a.next_session_rec||'—'}</div></div>
+      <div class="panel"><div class="rec-head">Recovery</div><div class="rec-body">${a.recovery_rec||'—'}</div></div>
+    </div>`:''}
+    ${a.session_note?`<div class="nota"><b>Note</b>${a.session_note}</div>`:''}
+  `;
+  el.hidden=false;
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── DAILY LOAD ─────────────────────────────────────────────────────────────
+async function loadDaily(){
+  const content=$('dailyContent');
+  content.innerHTML='<div class="loading-state"><div class="spinner"></div><p>Loading sessions…</p></div>';
+
+  try{
+    const resp=await fetch(`${API}/api/sessions?range=day`);
+    const data=await resp.json();
+    if(!resp.ok) throw new Error(data.error);
+
+    const sessions=data.sessions||[];
+    const today=new Date();
+    $('dailyTitle').textContent=today.toLocaleDateString('en',{weekday:'long',day:'numeric',month:'short'});
+    $('dailyDateStr').textContent=today.toISOString().split('T')[0];
+
+    if(!sessions.length){
+      content.innerHTML=`
+        <div class="empty-state">
+          <div class="mark">◇</div>
+          <p>No sessions logged today.</p>
+          <small>Go to Feelings to log your first session.</small>
+        </div>`;
+      return;
+    }
+
+    content.innerHTML=sessions.map(s=>renderDailySession(s)).join('');
+  }catch(err){
+    content.innerHTML=`<div class="empty-state"><div class="mark">!</div><p>${err.message}</p></div>`;
+  }
+}
+
+function renderDailySession(s){
+  const rpeBar=s.effort_rpe?`${s.effort_rpe*10}%`:'0%';
+  const moonsHTML=(q=>{
+    if(!q) return '';
+    let h='<div class="moons-read">';
+    for(let i=1;i<=5;i++) h+=`<span class="${i<=q?'':'empty'}">${moonSVG(i<=q)}</span>`;
+    return h+'</div>';
+  })(s.sleep_quality);
+
+  return `
+  <div style="margin-bottom:2px;">
+    <div class="slabel"><span class="n">◆</span>${fmtDate(s.date)} · ${(s.activity_type||'session').toUpperCase()}</div>
+
+    ${(s.distance_km||s.elevation_m||s.duration_min||s.hr_avg)?`
+    <div class="metrics" style="margin-bottom:1px;">
+      ${s.distance_km?`<div class="mcard"><div class="v">${parseFloat(s.distance_km).toFixed(1)}<small> km</small></div><div class="l">Distance</div></div>`:''}
+      ${s.elevation_m?`<div class="mcard"><div class="v">${s.elevation_m}<small> m</small></div><div class="l">D+</div></div>`:''}
+      ${s.duration_min?`<div class="mcard"><div class="v">${fmtTime(s.duration_min)}</div><div class="l">Duration</div></div>`:''}
+      ${s.hr_avg?`<div class="mcard"><div class="v">${s.hr_avg}<small>${s.hr_max?' /'+s.hr_max:' bpm'}</small></div><div class="l">HR avg</div></div>`:''}
+      ${s.effort_rpe?`<div class="mcard"><div class="v">${s.effort_rpe}<small>/10</small></div><div class="l">RPE</div></div>`:''}
+    </div>`:''}
+
+    <div class="grid2">
+      <div class="panel">
+        ${s.physical_feelings?`<div class="sens-row"><div class="k">Physical</div><div class="vtxt">${s.physical_feelings}</div></div>`:''}
+        ${s.mental_feelings?`<div class="sens-row"><div class="k">Mental</div><div class="vtxt">${s.mental_feelings}</div></div>`:''}
+        ${s.transcription?`<div class="sens-row"><div class="k">Audio</div><div class="vtxt" style="font-style:italic;color:var(--txt-2);">"${s.transcription}"</div></div>`:''}
+      </div>
+      <div class="panel">
+        ${s.effort_rpe?`
+        <div class="blockh"><span class="tick"></span>Effort</div>
+        <div class="effort-read"><div class="num">${s.effort_rpe}<span>/10</span></div><div class="bar"><i style="width:${rpeBar}"></i></div></div>
+        <div style="height:16px;"></div>`:''}
+        ${(s.sleep_hours||s.sleep_quality)?`
+        <div class="blockh"><span class="tick"></span>Sleep</div>
+        <div class="sleep-read">
+          ${s.sleep_hours?`<div class="item"><div class="v">${s.sleep_hours}<small>h</small></div><div class="l">Hours</div></div>`:''}
+          ${s.sleep_quality?`<div class="item">${moonsHTML}<div class="l">Quality</div></div>`:''}
+        </div>`:''}
+      </div>
+    </div>
+
+    ${(s.next_session_rec||s.recovery_rec)?`
+    <div class="recs-grid" style="margin-top:1px;">
+      <div class="panel"><div class="rec-head">Next session</div><div class="rec-body">${s.next_session_rec||'—'}</div></div>
+      <div class="panel"><div class="rec-head">Recovery</div><div class="rec-body">${s.recovery_rec||'—'}</div></div>
+    </div>`:''}
+
+    ${s.claude_analysis?`<div class="nota"><b>Analysis</b>${s.claude_analysis}</div>`:''}
+    ${s.session_note?`<div class="nota" style="border-left-color:var(--txt-3);"><b>Note</b>${s.session_note}</div>`:''}
+  </div>`;
+}
+
+// ── WEEKLY LOAD ─────────────────────────────────────────────────────────────
+async function loadWeekly(){
+  const content=$('weeklyContent');
+  content.innerHTML='<div class="loading-state"><div class="spinner"></div><p>Generating weekly summary…</p></div>';
+
+  try{
+    const resp=await fetch(`${API}/api/weekly`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({})
+    });
+    const data=await resp.json();
+    if(!resp.ok) throw new Error(data.error);
+
+    if(data.error){
+      content.innerHTML=`<div class="empty-state"><div class="mark">◇</div><p>${data.error}</p><small>Log sessions first to generate a weekly summary.</small></div>`;
+      return;
+    }
+
+    // Título semana
+    const {from, to}=data.range;
+    $('weeklyTitle').textContent=`${fmtDate(from)} – ${fmtDate(to)}`;
+
+    // Weeks to goal (hardcoded por ahora, configurable)
+    $('weeksToGoal').textContent='—';
+
+    const sessions=data.sessions||[];
+    const totals=data.totals||{};
+    const s=data.summary||{};
+
+    // Agrupar por disciplina
+    const byType={};
+    sessions.forEach(sess=>{
+      const t=sess.activity_type||'other';
+      if(!byType[t]) byType[t]={sessions:0,duration_min:0,distance_km:0,elevation_m:0};
+      byType[t].sessions++;
+      byType[t].duration_min+=(sess.duration_min||0);
+      byType[t].distance_km+=parseFloat(sess.distance_km||0);
+      byType[t].elevation_m+=(sess.elevation_m||0);
+    });
+
+    // Carga diaria (lunes–domingo)
+    const dayMap={};
+    sessions.forEach(sess=>{
+      if(sess.date) dayMap[sess.date]=(dayMap[sess.date]||0)+(sess.duration_min||0);
+    });
+    const monday=new Date(from+'T12:00:00');
+    const dailyLoad=[];
+    const dLabels=['M','T','W','T','F','S','S'];
+    for(let i=0;i<7;i++){
+      const d=new Date(monday); d.setDate(monday.getDate()+i);
+      const key=d.toISOString().split('T')[0];
+      dailyLoad.push({d:dLabels[i],min:dayMap[key]||0,we:i>=5});
+    }
+    const maxMin=Math.max(...dailyLoad.map(x=>x.min),1);
+
+    // Tabla disciplinas
+    const typeRows=Object.entries(byType).map(([t,v])=>`
+      <tr>
+        <td><span class="dot" style="background:var(--accent)"></span>${t.charAt(0).toUpperCase()+t.slice(1)}</td>
+        <td>${v.sessions}</td>
+        <td>${v.distance_km>0?v.distance_km.toFixed(1):'—'}</td>
+        <td>${v.elevation_m>0?v.elevation_m.toLocaleString():'—'}</td>
+        <td>${fmtTime(v.duration_min)}</td>
+      </tr>`).join('');
+
+    content.innerHTML=`
+      <div class="slabel"><span class="n">A</span>Breakdown</div>
+      <div class="panel" style="padding:8px 10px;">
+        <table class="brk">
+          <thead><tr><th>Discipline</th><th>Sessions</th><th>Km</th><th>D+</th><th>Time</th></tr></thead>
+          <tbody>
+            ${typeRows}
+            <tr class="total">
+              <td>Total</td>
+              <td>${totals.sessions||0}</td>
+              <td>${totals.distance_km>0?(+totals.distance_km).toFixed(1):'—'}</td>
+              <td>${totals.elevation_m>0?totals.elevation_m.toLocaleString():'—'}</td>
+              <td>${fmtTime(totals.duration_min)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="slabel"><span class="n">B</span>Daily load <span style="font-family:var(--mono);font-size:10px;color:var(--txt-3);font-weight:400;margin-left:auto;">min</span></div>
+      <div class="panel">
+        <div class="load" id="loadChartW">
+          ${dailyLoad.map(x=>`
+          <div class="day${x.we?' we':''}">
+            <div class="track"><div class="barwrap">
+              <div class="bar${x.we?' we':''}${x.min===0?' zero':''}" style="height:${x.min===0?'3px':Math.round(x.min/maxMin*100)+'%'}">
+                ${x.min>0?`<div class="cap">${x.min}'</div>`:''}
+              </div>
+            </div></div>
+            <div class="dlabel">${x.d}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      ${(s.week_start_feelings||s.week_mid_feelings||s.week_end_feelings)?`
+      <div class="slabel"><span class="n">C</span>Feelings</div>
+      <div class="three">
+        <div class="panel"><span class="stage">START</span><div class="ph">Beginning</div><div class="pt">${s.week_start_feelings||'—'}</div></div>
+        <div class="panel"><span class="stage">MID</span><div class="ph">During</div><div class="pt">${s.week_mid_feelings||'—'}</div></div>
+        <div class="panel"><span class="stage">END</span><div class="ph">Close</div><div class="pt">${s.week_end_feelings||'—'}</div></div>
+      </div>`:''}
+
+      ${s.insights?`
+      <div class="slabel"><span class="n">D</span>Insights</div>
+      <div class="insight"><div class="blockh"><span class="tick"></span>Week analysis</div><p>${s.insights}</p></div>`:''}
+
+      ${(s.next_week_prioritize||s.next_week_moderate||s.next_week_watch)?`
+      <div class="slabel"><span class="n">E</span>Next week</div>
+      <ul class="reclist">
+        ${s.next_week_prioritize?`<li><span class="tag prio">Prioritize</span><span class="rtxt">${s.next_week_prioritize}</span></li>`:''}
+        ${s.next_week_moderate?`<li><span class="tag mod">Moderate</span><span class="rtxt">${s.next_week_moderate}</span></li>`:''}
+        ${s.next_week_watch?`<li><span class="tag watch">Watch</span><span class="rtxt">${s.next_week_watch}</span></li>`:''}
+      </ul>`:''}
+    `;
+
+  }catch(err){
+    content.innerHTML=`<div class="empty-state"><div class="mark">!</div><p>${err.message}</p></div>`;
+  }
+}
+</script>
+</body>
+</html>
