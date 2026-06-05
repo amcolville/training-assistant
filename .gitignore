@@ -1,0 +1,16 @@
+# Archivos de atleta con datos personales
+athlete/radiografia_entrenamiento_*.md
+athlete/patrones_rendimiento_*.md
+athlete/contexto_*.md
+
+# Excepción
+!athlete/README.md
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
